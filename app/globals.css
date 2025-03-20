@@ -1,0 +1,352 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* Login & Register Pages */
+.auth {
+  @apply w-full h-lvh flex items-center justify-center;
+}
+
+.content {
+  @apply w-1/3 py-7 px-4 max-sm:w-5/6 max-lg:w-2/3 max-xl:w-1/2 flex flex-col items-center justify-center gap-6 bg-white rounded-3xl;
+}
+
+.logo {
+  @apply w-11 h-11;
+}
+
+.form {
+  @apply flex flex-col items-center gap-5;
+}
+
+.input {
+  @apply flex items-center justify-between px-5 py-3 rounded-2xl cursor-pointer shadow-2xl;
+}
+
+.input-field {
+  @apply w-[300px] max-sm:w-full bg-transparent outline-none;
+}
+
+.button {
+  @apply w-full px-5 py-3 mt-5 mb-7 rounded-xl cursor-pointer bg-blue-1 hover:bg-red-1 text-white text-body-bold;
+}
+
+.link {
+  @apply text-base-medium hover:text-red-1;
+}
+
+/* Main Container */
+.main-container {
+  @apply flex justify-between gap-5 px-10 py-3 max-lg:gap-8 h-[90vh] max-sm:py-0 max-sm:h-[80vh] max-sm:px-6;
+}
+
+/* Top Bar */
+.topbar {
+  @apply top-0 sticky px-10 py-1 flex items-center justify-between bg-white max-sm:py-1 max-sm:px-5 z-50;
+}
+
+.menu {
+  @apply flex items-center gap-8 max-sm:gap-5;
+}
+
+.profilePhoto {
+  @apply w-9 h-9 rounded-full object-cover object-center;
+}
+
+/* Bottom Bar */
+.bottom-bar {
+  @apply fixed bottom-0 z-50 w-full flex justify-between items-center px-6 py-2 bg-white sm:hidden
+}
+
+/* Profile Page */
+.profile-page {
+  @apply mt-4 flex flex-col gap-7 items-center justify-center;
+}
+
+.edit-profile {
+  @apply flex flex-col gap-9
+}
+
+.profile {
+  @apply w-1/3 max-sm:w-5/6 max-lg:w-2/3 max-xl:w-1/2 flex flex-col items-center justify-center gap-6 bg-white rounded-3xl;
+}
+
+.btn {
+  @apply flex items-center max-sm:text-small-bold justify-center rounded-xl p-3 bg-gradient-to-l from-blue-1 to-blue-3 text-body-bold text-white;
+}
+
+/* Chat List */
+.chat-list {
+  @apply flex flex-col gap-5 pb-2 h-full max-sm:gap-3 max-sm:h-[90%];
+}
+
+.input-search {
+  @apply px-5 py-3 rounded-2xl bg-white outline-none shadow-md;
+}
+
+.chats {
+  @apply flex-1 flex flex-col bg-white rounded-3xl py-4 px-3 overflow-y-scroll custom-scrollbar shadow-xl;
+}
+
+/* Chat Box */
+.chat-box {
+  @apply flex items-start justify-between p-2 rounded-2xl cursor-pointer hover:bg-grey-2;
+}
+
+.current-chat {
+  @apply bg-blue-2;
+}
+
+.chat-info {
+  @apply flex gap-3;
+}
+
+.last-message {
+  @apply w-[120px] sm:w-[250px] truncate;
+}
+
+/* Contacts */
+.create-chat-container {
+  @apply flex flex-col gap-5 h-full pb-2 max-sm:gap-3;
+}
+
+.contact-bar {
+  @apply flex gap-7 items-start max-lg:flex-col flex-1 max-sm:gap-3;
+}
+
+.contact-list {
+  @apply w-1/2 max-lg:w-full flex flex-col gap-5 bg-white rounded-3xl py-5 pl-8 pr-5 h-[76.5vh] max-sm:h-[62vh] shadow-xl;
+}
+
+.contact {
+  @apply flex gap-3 items-center cursor-pointer;
+}
+
+.create-chat {
+  @apply w-1/2 max-lg:w-full flex flex-col gap-7;
+}
+
+.input-group-name {
+  @apply bg-white rounded-2xl px-5 py-3 outline-none;
+}
+
+.selected-contact {
+  @apply text-base-bold p-2 bg-pink-1 rounded-lg;
+}
+
+/* ChatDetails */
+.chat-details {
+  @apply flex flex-col bg-white rounded-2xl h-full shadow-xl;
+}
+
+/* Chat Header */
+.chat-header {
+  @apply flex items-center gap-4 px-8 py-3 text-body-bold max-sm:py-1;
+}
+
+/* Chat Body */
+.chat-body {
+  @apply flex-1 flex flex-col gap-5 bg-grey-2 p-5 overflow-y-scroll custom-scrollbar;
+}
+
+.message-box {
+  @apply flex gap-3 items-start;
+}
+
+.message-profilePhoto {
+  @apply w-8 h-8 rounded-full;
+}
+
+.message-info {
+  @apply flex flex-col gap-2;
+}
+
+.message-photo {
+  @apply w-40 h-auto rounded-lg;
+}
+
+.message-text {
+  @apply w-fit bg-white p-3 rounded-lg text-base-medium;
+}
+
+.message-text-sender {
+  @apply w-fit bg-purple-2 text-white p-3 rounded-lg text-base-medium;
+}
+
+/* Message Input */
+.send-message {
+  @apply w-full flex items-center justify-between px-7 py-3 rounded-3xl cursor-pointer bg-white max-sm:py-2;
+}
+
+.prepare-message {
+  @apply flex items-center gap-4;
+}
+
+.send-icon {
+  @apply w-10 h-10 rounded-full hover:scale-125 ease-in-out duration-300;
+}
+
+/* BottomBar */
+.bottombar {
+  @apply bottom-0 sticky px-10 py-5 flex items-center justify-between sm:hidden;
+}
+
+
+
+
+.input-custom {
+  font-family: "SF Pro";
+  padding: 6px;
+  font-size: 1rem;
+  border: 1.5px solid #000;
+  border-radius: 0.5rem;
+  box-shadow: 2.5px 3px 0 #000;
+  outline: none;
+  transition: ease 0.25s;
+}
+
+.input-custom:focus {
+  box-shadow: 3px 4px 0 black;
+}
+
+.input-number {
+  border: 1.5px solid #222121;
+  @apply shadow-md
+}
+
+.input-text {
+  border: 1.5px solid #5f5e5e;
+  @apply shadow-md
+}
+
+.text {
+  font-size: 30px;
+}
+
+/* styles.css */
+/* styles.css */
+/* styles.css */
+.custom-button {
+  @apply text-white font-medium rounded-lg px-8 py-4 transition-transform duration-300;
+}
+
+.button-dang-day {
+  @apply bg-gradient-to-r from-green-400 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80;
+}
+
+.button-cham-thi {
+  @apply bg-gradient-to-r from-red-400 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80;
+}
+
+.button-huong-dan {
+  @apply bg-gradient-to-r from-yellow-400 to-yellow-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:focus:ring-yellow-800 shadow-lg shadow-yellow-500/50 dark:shadow-lg dark:shadow-yellow-800/80;
+}
+
+.button-coi-thi {
+  @apply bg-gradient-to-r from-purple-400 to-purple-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80;
+}
+
+.button-ra-de-thi {
+  @apply bg-gradient-to-r from-blue-400 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80;
+}
+
+.button-kiem-nhiem {
+  @apply bg-gradient-to-r from-pink-400 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80;
+}
+
+.button-boi-duong {
+  @apply bg-gradient-to-r from-teal-400 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80;
+}
+
+/* Thêm một đường viền dưới nút đang được chọn */
+.custom-button-active {
+  @apply p-5 rounded-full;
+}
+
+/* styles.css */
+.custom-button-1 {
+  @apply text-white font-bold rounded-lg px-8 py-4 h-40 w-80 transition-transform duration-300;
+}
+
+/* Button Chinh Quý */
+.button-chinh-quy {
+  @apply bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50;
+}
+
+/* Button Chinh Quý Khác */
+.button-chinh-quy-khac {
+  @apply bg-gradient-to-r from-green-500 via-green-600 to-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 shadow-lg shadow-green-500/50;
+}
+
+/* Button Bồi Dưỡng */
+.button-boi-duong {
+  @apply bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 shadow-lg shadow-orange-500/50;
+}
+
+.button-lien-thong-chinh-quy {
+  @apply bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 shadow-lg shadow-pink-500/50;
+}
+
+.button-lien-thong-vlvh {
+  @apply bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 focus:ring-4 focus:outline-none focus:ring-teal-300 shadow-lg shadow-teal-500/50;
+}
+
+.button-lien-thong-vlvh-nd71 {
+  @apply bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg shadow-purple-500/50;
+}
+
+/* Hover Effects */
+.button-lien-thong-vlvh-nd71:hover,
+.button-lien-thong-vlvh:hover,
+.button-lien-thong-chinh-quy:hover,
+.button-chinh-quy:hover,
+.button-chinh-quy-khac:hover,
+.button-boi-duong:hover {
+  @apply bg-opacity-90;
+}
+
+
+.bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+/* Global styles or in a CSS module */
+.card-style {
+  background-color: #f9f9f9;
+  /* Light background color */
+  border-radius: 8px;
+  /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  padding: 16px;
+  /* Add padding inside the card */
+  margin: 8px;
+  /* Add margin around the card */
+}
+
+.ant-table-thead .ant-table-cell {
+  padding: 1px !important;
+  text-align: center;
+}
+
+.ant-tabs-tab {
+  padding: 4px !important;
+}
+
+.ant-card .ant-card-body {
+  padding: 8px;
+}
+.ant-card .ant-card-head {
+  padding: 0px;
+}
