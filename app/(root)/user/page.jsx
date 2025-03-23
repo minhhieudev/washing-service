@@ -2,23 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  MdLocalLaundryService, 
-  MdDeliveryDining, 
-  MdPendingActions, 
-  MdDone, 
+import {
+  MdLocalLaundryService,
+  MdDeliveryDining,
+  MdPendingActions,
+  MdDone,
   MdLocalShipping,
-  MdInfo 
+  MdInfo
 } from 'react-icons/md';
-import { 
-  FaMotorcycle, 
+import {
+  FaMotorcycle,
   FaUserCircle,
-  FaPhone, 
-  FaMapMarkerAlt, 
-  FaCreditCard, 
-  FaUser, 
+  FaPhone,
+  FaMapMarkerAlt,
+  FaCreditCard,
+  FaUser,
   FaEdit,
-  FaClock 
+  FaClock,
+  FaStar
 } from 'react-icons/fa';
 import { BiSolidWasher } from 'react-icons/bi';
 import Cookies from 'js-cookie';
@@ -82,6 +83,8 @@ const User = () => {
   const [loading, setLoading] = useState(false);
   const [userPhone, setUserPhone] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [userPoints, setUserPoints] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
 
   // Animation variants
   const containerVariants = {
@@ -104,6 +107,7 @@ const User = () => {
   useEffect(() => {
     if (userPhone) {
       fetchOrders();
+      fetchUserPoints();
     }
   }, [userPhone]);
 
@@ -129,9 +133,30 @@ const User = () => {
     }
   };
 
+  // Thêm useEffect để fetch điểm của user
+  const fetchUserPoints = async () => {
+    try {
+      const res = await fetch(`/api/user/points?phone=${userPhone}`);
+      if (res.ok) {
+        const data = await res.json();
+        setUserPoints(data.points);
+        setTotalOrders(data.totalOrders);
+      }
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+    }
+  };
+
   // Create new order
   const handleCreateOrder = async (e) => {
     e.preventDefault();
+
+    // Kiểm tra địa chỉ khi chọn delivery
+    if (newOrder.type === 'delivery' && !newOrder.address.trim()) {
+      toast.error('Vui lòng nhập địa chỉ lấy hàng!');
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await fetch('/api/user', {
@@ -216,10 +241,10 @@ const User = () => {
               className="flex items-center gap-4"
             >
               <div className="relative">
-                <img 
-                  src="https://tiemgiatsheep.com/wp-content/uploads/2023/04/about-us-uai-1032x821-2.png" 
-                  alt="Logo" 
-                  className="h-16 w-16 md:h-20 md:w-20 rounded-full border-4 border-white/20" 
+                <img
+                  src="https://tiemgiatsheep.com/wp-content/uploads/2023/04/about-us-uai-1032x821-2.png"
+                  alt="Logo"
+                  className="h-16 w-16 md:h-20 md:w-20 rounded-full border-4 border-white/20"
                 />
                 <BiSolidWasher className="absolute -bottom-2 -right-2 text-2xl md:text-3xl text-purple-600 bg-white rounded-full p-1" />
               </div>
@@ -228,20 +253,26 @@ const User = () => {
                 <p className="text-sm text-white/80">Giặt sạch - Giao nhanh</p>
               </div>
             </motion.div>
-            
+
             {userPhone && (
-              <div className="flex sm:flex-row items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3 flex-wrap">
                 <div className="bg-white/10 px-4 py-2 rounded-full flex items-center gap-2">
                   <FaPhone className="text-white/80" />
                   <span>{userPhone}</span>
                 </div>
-                <button 
+                <button
                   onClick={handleChangePhone}
                   className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
                 >
                   <FaEdit className="text-sm" />
                   Thay đổi
                 </button>
+                <div className="bg-yellow-400/20 px-4 py-2 rounded-full flex items-center gap-2">
+                  <FaStar className="text-yellow-400" />
+                  <span className="text-white">
+                    {userPoints} điểm ({totalOrders} đơn)
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -258,22 +289,22 @@ const User = () => {
           >
             <div className="flex flex-col sm:flex-row items-start gap-6">
               <div className="relative flex-shrink-0 mx-auto sm:mx-0">
-                <img 
-                  src="https://img.lovepik.com/png/20231127/man-avatar-isolated-cartoon-hair-lifestyle_712040_wh860.png" 
-                  alt="Avatar" 
-                  className="h-24 w-24 rounded-full border-4 border-purple-100" 
+                <img
+                  src="https://img.lovepik.com/png/20231127/man-avatar-isolated-cartoon-hair-lifestyle_712040_wh860.png"
+                  alt="Avatar"
+                  className="h-24 w-24 rounded-full border-4 border-purple-100"
                 />
                 <div className="absolute -bottom-2 -right-2 bg-purple-600 text-white p-2 rounded-full">
                   <FaUser className="text-sm" />
                 </div>
               </div>
-              
+
               <div className="flex-1 space-y-4 text-center sm:text-left">
                 <h3 className="text-xl font-semibold text-gray-800 flex items-center  sm:justify-start gap-2">
                   <BiSolidWasher className="text-purple-600" />
                   Thông tin chủ shop
                 </h3>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 sm:justify-start">
                     <FaUser className="text-purple-600" />
@@ -348,11 +379,10 @@ const User = () => {
                   <button
                     type="button"
                     onClick={() => setNewOrder({ ...newOrder, type: 'delivery' })}
-                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${
-                      newOrder.type === 'delivery'
+                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${newOrder.type === 'delivery'
                         ? 'border-purple-500 bg-purple-50 shadow-md'
                         : 'border-gray-200 hover:border-purple-200'
-                    }`}
+                      }`}
                   >
                     <div className={`p-4 rounded-full ${newOrder.type === 'delivery' ? 'bg-purple-100' : 'bg-gray-100'}`}>
                       <FaMotorcycle className={`h-8 w-8 ${newOrder.type === 'delivery' ? 'text-purple-600' : 'text-gray-400'}`} />
@@ -363,11 +393,10 @@ const User = () => {
                   <button
                     type="button"
                     onClick={() => setNewOrder({ ...newOrder, type: 'store' })}
-                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${
-                      newOrder.type === 'store'
+                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${newOrder.type === 'store'
                         ? 'border-purple-500 bg-purple-50 shadow-md'
                         : 'border-gray-200 hover:border-purple-200'
-                    }`}
+                      }`}
                   >
                     <div className={`p-4 rounded-full ${newOrder.type === 'store' ? 'bg-purple-100' : 'bg-gray-100'}`}>
                       <MdLocalLaundryService className={`h-8 w-8 ${newOrder.type === 'store' ? 'text-purple-600' : 'text-gray-400'}`} />
@@ -394,16 +423,24 @@ const User = () => {
                 <div className="mt-4">
                   <label className="block text-lg font-medium text-gray-700 mb-4 flex items-center gap-2">
                     <FaMapMarkerAlt className="text-purple-600" />
-                    Địa chỉ lấy hàng
+                    Địa chỉ lấy hàng <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={newOrder.address}
                     onChange={(e) => setNewOrder({ ...newOrder, address: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent ${newOrder.address.trim() === '' ? 'border-red-300' : 'border-gray-300'
+                      }`}
                     placeholder="Nhập địa chỉ lấy hàng..."
-                    required
                   />
+                  {newOrder.address.trim() === '' && (
+                    <p className="mt-2 text-sm text-red-500 flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      Vui lòng nhập địa chỉ lấy hàng
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -436,7 +473,7 @@ const User = () => {
             <BiSolidWasher className="text-purple-600" />
             Đơn của bạn
           </h2>
-          
+
           {orders.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
               <div className="bg-purple-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
@@ -476,7 +513,7 @@ const User = () => {
                       <StatusBadge currentStatus={order.status} />
                     </div>
                   </div>
-                  
+
                   {/* Thêm phần hiển thị chi tiết các khoản tiền */}
                   {order.totalPayment > 0 && (
                     <div className="mt-4 bg-gray-50 rounded-xl p-4">
@@ -511,7 +548,7 @@ const User = () => {
                             <span className="text-gray-600">Giảm giá</span>
                             <div className="flex items-center space-x-1">
                               <span className="font-semibold text-red-600">
-                                {order.discountType === 'percent' 
+                                {order.discountType === 'percent'
                                   ? `-${order.discount}% (${Math.round(order.actualDiscount).toLocaleString('vi-VN')}đ)`
                                   : `-${order.discount?.toLocaleString('vi-VN')}đ`
                                 }
@@ -533,7 +570,7 @@ const User = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Hiển thị ghi chú nếu có */}
                   {selectedOrder === order._id && order.note && (
                     <motion.div
@@ -548,7 +585,7 @@ const User = () => {
                       </div>
                     </motion.div>
                   )}
-                  
+
                   {/* Hiển thị địa chỉ nếu là đơn delivery */}
                   {order.type === 'delivery' && order.address && (
                     <div className="mt-4 flex items-start space-x-2 bg-purple-50 p-4 rounded-xl">
@@ -556,7 +593,36 @@ const User = () => {
                       <p className="text-gray-700">Địa chỉ: {order.address}</p>
                     </div>
                   )}
-                  
+
+                  {/* Thêm phần nút hủy đơn hàng */}
+                  {order.status === 'pending' && (
+                    <div className="mt-4 border-t pt-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài
+                          handleCancelOrder(order._id);
+                        }}
+                        className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Hủy đơn hàng
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Hiển thị trạng thái đã hủy nếu đơn bị hủy */}
+                  {order.status === 'canceled' && (
+                    <div className="mt-4 border-t pt-4">
+                      <span className="text-red-600 font-medium flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Đã hủy đơn
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>

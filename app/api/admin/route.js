@@ -1,5 +1,6 @@
 import { connectToDB } from '@/mongodb';
 import Order from '@/models/Order';
+import User from '@/models/User';
 import { NextResponse } from 'next/server';
 
 // Get all orders with filters
@@ -50,6 +51,9 @@ export async function PUT(request) {
       );
     }
 
+    const previousStatus = order.status;
+    
+    // Cập nhật thông tin đơn hàng
     if (status) order.status = status;
     if (subtotal !== undefined) order.subtotal = subtotal;
     if (shippingFee !== undefined) order.shippingFee = shippingFee;
@@ -59,6 +63,27 @@ export async function PUT(request) {
     if (totalPayment !== undefined) order.totalPayment = totalPayment;
 
     await order.save();
+
+    // Nếu đơn hàng chuyển sang trạng thái completed, cập nhật điểm cho user
+    if (status === 'completed' && previousStatus !== 'completed') {
+      // Tìm hoặc tạo user mới
+      let user = await User.findOne({ phone: order.phone });
+      if (!user) {
+        user = new User({ phone: order.phone });
+      }
+      
+      // Tăng điểm và số đơn hàng
+      user.points += 1;
+      user.totalOrders += 1;
+      await user.save();
+
+      // Trả về thông tin đơn hàng kèm điểm của user
+      return NextResponse.json({
+        ...order.toObject(),
+        userPoints: user.points,
+        totalOrders: user.totalOrders
+      });
+    }
 
     return NextResponse.json(order);
   } catch (error) {
