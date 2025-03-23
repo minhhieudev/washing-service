@@ -2,6 +2,7 @@ import { connectToDB } from '@/mongodb';
 import Order from '@/models/Order';
 import User from '@/models/User';
 import { NextResponse } from 'next/server';
+import { pusherServer } from '@/lib/pusher';
 
 // Get all orders with filters
 export async function GET(request) {
@@ -63,6 +64,11 @@ export async function PUT(request) {
     if (totalPayment !== undefined) order.totalPayment = totalPayment;
 
     await order.save();
+
+    // Gửi thông báo qua Pusher sau khi lưu
+    await pusherServer.trigger(`order-${order.phone}`, 'order-updated', {
+      order: order.toObject()
+    });
 
     // Nếu đơn hàng chuyển sang trạng thái completed, cập nhật điểm cho user
     if (status === 'completed' && previousStatus !== 'completed') {

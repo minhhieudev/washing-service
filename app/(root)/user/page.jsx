@@ -24,6 +24,7 @@ import {
 import { BiSolidWasher } from 'react-icons/bi';
 import Cookies from 'js-cookie';
 import { toast } from 'react-hot-toast';
+import { pusherClient } from '@/lib/pusher';
 
 const StatusBadge = ({ currentStatus }) => {
   const badges = {
@@ -222,6 +223,31 @@ const User = () => {
     Cookies.remove('phone'); // Xóa cookie phone
     window.location.href = '/'; // Chuyển về trang chủ
   };
+
+  useEffect(() => {
+    if (userPhone) {
+      // Subscribe to user's channel
+      const channel = pusherClient.subscribe(`order-${userPhone}`);
+      
+      // Listen for order updates
+      channel.bind('order-updated', (data) => {
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order._id === data.order._id ? data.order : order
+          )
+        );
+        
+        // Hiển thị thông báo
+        toast.success('Đơn hàng của bạn vừa được cập nhật!');
+      });
+
+      // Cleanup khi component unmount
+      return () => {
+        channel.unbind_all();
+        pusherClient.unsubscribe(`order-${userPhone}`);
+      };
+    }
+  }, [userPhone]);
 
   return (
     <motion.div
@@ -644,3 +670,7 @@ const User = () => {
 };
 
 export default User;
+
+
+// Tích điểm đổi quà
+// Thời gian thực
