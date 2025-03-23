@@ -2,8 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdLocalLaundryService, MdDeliveryDining, MdPendingActions, MdDone, MdLocalShipping } from 'react-icons/md';
-import { FaMotorcycle } from 'react-icons/fa';
+import { 
+  MdLocalLaundryService, 
+  MdDeliveryDining, 
+  MdPendingActions, 
+  MdDone, 
+  MdLocalShipping,
+  MdInfo 
+} from 'react-icons/md';
+import { 
+  FaMotorcycle, 
+  FaUserCircle,
+  FaPhone, 
+  FaMapMarkerAlt, 
+  FaCreditCard, 
+  FaUser, 
+  FaEdit,
+  FaClock 
+} from 'react-icons/fa';
+import { BiSolidWasher } from 'react-icons/bi';
 import Cookies from 'js-cookie';
 import { toast } from 'react-hot-toast';
 
@@ -27,7 +44,7 @@ const StatusBadge = ({ currentStatus }) => {
   };
 
   const statuses = ['pending', 'processing', 'completed'];
-  
+
   return (
     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 items-center">
       {statuses.map((status) => {
@@ -60,6 +77,7 @@ const User = () => {
   const [newOrder, setNewOrder] = useState({
     type: 'delivery',
     note: '',
+    address: '',
   });
   const [loading, setLoading] = useState(false);
   const [userPhone, setUserPhone] = useState('');
@@ -96,7 +114,7 @@ const User = () => {
       const res = await fetch(`/api/user?phone=${userPhone}`, {
         method: 'GET',
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -125,6 +143,7 @@ const User = () => {
           phone: userPhone,
           type: newOrder.type,
           note: newOrder.note,
+          address: newOrder.address,
         }),
       });
 
@@ -132,7 +151,7 @@ const User = () => {
         const data = await res.json();
         setOrders(prev => [data, ...prev]);
         setIsCreatingOrder(false);
-        setNewOrder({ type: 'delivery', note: '' });
+        setNewOrder({ type: 'delivery', note: '', address: '' });
         toast.success('Tạo đơn hàng thành công!');
       } else {
         const error = await res.json();
@@ -158,7 +177,7 @@ const User = () => {
       });
 
       if (res.ok) {
-        setOrders(prev => prev.map(order => 
+        setOrders(prev => prev.map(order =>
           order._id === orderId ? { ...order, status: 'canceled' } : order
         ));
         toast.success('Đơn hàng đã được hủy!');
@@ -173,118 +192,233 @@ const User = () => {
     }
   };
 
+  // Thêm xử lý cho nút thay đổi số điện thoại
+  const handleChangePhone = () => {
+    Cookies.remove('phone'); // Xóa cookie phone
+    window.location.href = '/'; // Chuyển về trang chủ
+  };
+
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#f9eeee] to-[#ecf9ec]"
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"
     >
-      {/* Header Section */}
-      <div className="max-w-7xl mx-auto ">
-        <div className="text-center">
-          <motion.h1
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-gray-900 mb-2"
-          >
-            Welcome to Laundry Service
-          </motion.h1>
-          {userPhone && <p className="text-gray-600">Số điện thoại: {userPhone}</p>}
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Đang xử lý...</p>
-            </div>
+      {/* Header Section - Responsive */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 px-4 lg:py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-4"
+            >
+              <div className="relative">
+                <img 
+                  src="https://tiemgiatsheep.com/wp-content/uploads/2023/04/about-us-uai-1032x821-2.png" 
+                  alt="Logo" 
+                  className="h-16 w-16 md:h-20 md:w-20 rounded-full border-4 border-white/20" 
+                />
+                <BiSolidWasher className="absolute -bottom-2 -right-2 text-2xl md:text-3xl text-purple-600 bg-white rounded-full p-1" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">Laundry Service</h1>
+                <p className="text-sm text-white/80">Giặt sạch - Giao nhanh</p>
+              </div>
+            </motion.div>
+            
+            {userPhone && (
+              <div className="flex sm:flex-row items-center gap-3">
+                <div className="bg-white/10 px-4 py-2 rounded-full flex items-center gap-2">
+                  <FaPhone className="text-white/80" />
+                  <span>{userPhone}</span>
+                </div>
+                <button 
+                  onClick={handleChangePhone}
+                  className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
+                >
+                  <FaEdit className="text-sm" />
+                  Thay đổi
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Create Order Button */}
-        {!isCreatingOrder && (
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* Shop Info & Create Order Section - Grid Layout */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Shop Owner Information */}
           <motion.div
             variants={cardVariants}
-            className="mt-8 flex justify-center"
+            className="bg-white rounded-2xl shadow-lg p-6"
           >
-            <button
-              onClick={() => setIsCreatingOrder(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2"
-            >
-              <MdLocalLaundryService className="text-xl" />
-              <span>Tạo đơn giặt mới</span>
-            </button>
+            <div className="flex flex-col sm:flex-row items-start gap-6">
+              <div className="relative flex-shrink-0 mx-auto sm:mx-0">
+                <img 
+                  src="https://img.lovepik.com/png/20231127/man-avatar-isolated-cartoon-hair-lifestyle_712040_wh860.png" 
+                  alt="Avatar" 
+                  className="h-24 w-24 rounded-full border-4 border-purple-100" 
+                />
+                <div className="absolute -bottom-2 -right-2 bg-purple-600 text-white p-2 rounded-full">
+                  <FaUser className="text-sm" />
+                </div>
+              </div>
+              
+              <div className="flex-1 space-y-4 text-center sm:text-left">
+                <h3 className="text-xl font-semibold text-gray-800 flex items-center  sm:justify-start gap-2">
+                  <BiSolidWasher className="text-purple-600" />
+                  Thông tin chủ shop
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 sm:justify-start">
+                    <FaUser className="text-purple-600" />
+                    <p className="text-gray-700">Thái Toại</p>
+                  </div>
+                  <div className="flex items-center gap-3 sm:justify-start">
+                    <FaPhone className="text-purple-600" />
+                    <p className="text-gray-700">0123 456 789</p>
+                  </div>
+                  <div className="flex items-center gap-3 sm:justify-start">
+                    <FaCreditCard className="text-purple-600" />
+                    <p className="text-gray-700">STK: 123456789</p>
+                  </div>
+                  <div className="flex items-center gap-3 sm:justify-start">
+                    <FaMapMarkerAlt className="text-purple-600" />
+                    <p className="text-gray-700">123 Đường ABC, Thành phố XYZ</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        )}
 
-        {/* Create Order Form */}
+          {/* Create Order Section */}
+          <motion.div
+            variants={cardVariants}
+            className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-center"
+          >
+            {!isCreatingOrder ? (
+              <div className="text-center space-y-4">
+                <div className="bg-purple-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center">
+                  <BiSolidWasher className="h-8 w-8 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Bắt đầu giặt đồ</h3>
+                </div>
+                <button
+                  onClick={() => setIsCreatingOrder(true)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <MdLocalLaundryService className="text-xl" />
+                  Tạo đơn giặt mới
+                </button>
+              </div>
+            ) : null}
+          </motion.div>
+        </div>
+
+        {/* Create Order Form - Responsive */}
         {isCreatingOrder && (
           <motion.div
             variants={cardVariants}
-            className="mt-8 max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6"
+            className="bg-white rounded-2xl shadow-lg p-6"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Tạo đơn giặt mới</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center gap-3">
+                <BiSolidWasher className="text-purple-600" />
+                Tạo đơn giặt mới
+              </h2>
+              <button
+                onClick={() => setIsCreatingOrder(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-300"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
             <form onSubmit={handleCreateOrder} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hình thức
-                </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button
                     type="button"
                     onClick={() => setNewOrder({ ...newOrder, type: 'delivery' })}
-                    className={`p-3 rounded-lg border-2 flex flex-col items-center space-y-2 transition-all duration-200 ${
+                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${
                       newOrder.type === 'delivery'
-                        ? 'border-purple-500 bg-purple-50'
+                        ? 'border-purple-500 bg-purple-50 shadow-md'
                         : 'border-gray-200 hover:border-purple-200'
                     }`}
                   >
-                    <FaMotorcycle className="h-10 w-10 text-purple-600" />
-                    <span className="font-medium">Đến lấy tận nơi</span>
+                    <div className={`p-4 rounded-full ${newOrder.type === 'delivery' ? 'bg-purple-100' : 'bg-gray-100'}`}>
+                      <FaMotorcycle className={`h-8 w-8 ${newOrder.type === 'delivery' ? 'text-purple-600' : 'text-gray-400'}`} />
+                    </div>
+                    <span className="font-medium text-gray-800">Đến lấy tận nơi</span>
                   </button>
+
                   <button
                     type="button"
                     onClick={() => setNewOrder({ ...newOrder, type: 'store' })}
-                    className={`p-3 rounded-lg border-2 flex flex-col items-center space-y-2 transition-all duration-200 ${
+                    className={`p-6 rounded-xl border-2 flex flex-col items-center gap-4 transition-all duration-300 ${
                       newOrder.type === 'store'
-                        ? 'border-purple-500 bg-purple-50'
+                        ? 'border-purple-500 bg-purple-50 shadow-md'
                         : 'border-gray-200 hover:border-purple-200'
                     }`}
                   >
-                    <MdLocalLaundryService className="h-10 w-10 text-purple-600" />
-                    <span className="font-medium">Mang đến tiệm</span>
+                    <div className={`p-4 rounded-full ${newOrder.type === 'store' ? 'bg-purple-100' : 'bg-gray-100'}`}>
+                      <MdLocalLaundryService className={`h-8 w-8 ${newOrder.type === 'store' ? 'text-purple-600' : 'text-gray-400'}`} />
+                    </div>
+                    <span className="font-medium text-gray-800">Mang đến tiệm</span>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-lg font-medium text-gray-700 mb-4">
                   Ghi chú
                 </label>
                 <textarea
-                  id="note"
                   value={newOrder.note}
                   onChange={(e) => setNewOrder({ ...newOrder, note: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   rows="3"
                   placeholder="Thêm ghi chú về đơn giặt của bạn..."
                 />
               </div>
 
-              <div className="flex space-x-4">
+              {newOrder.type === 'delivery' && (
+                <div className="mt-4">
+                  <label className="block text-lg font-medium text-gray-700 mb-4 flex items-center gap-2">
+                    <FaMapMarkerAlt className="text-purple-600" />
+                    Địa chỉ lấy hàng
+                  </label>
+                  <input
+                    type="text"
+                    value={newOrder.address}
+                    onChange={(e) => setNewOrder({ ...newOrder, address: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Nhập địa chỉ lấy hàng..."
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                 >
-                  Xác nhận
+                  <BiSolidWasher className="text-xl" />
+                  Xác nhận đơn
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsCreatingOrder(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2 font-medium hover:bg-gray-200 transition-all duration-200 p-6 rounded-md"
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 font-medium hover:bg-gray-200 transition-all duration-300 rounded-xl flex items-center justify-center gap-2"
                 >
                   Hủy
                 </button>
@@ -293,73 +427,152 @@ const User = () => {
           </motion.div>
         )}
 
-        {/* Orders List */}
+        {/* Orders List - Responsive */}
         <motion.div
           variants={cardVariants}
-          className="mt-12 grid gap-6 max-w-7xl mx-auto"
+          className="space-y-6"
         >
-          <h2 className="text-2xl font-semibold text-gray-800">Đơn của bạn:</h2>
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center gap-3">
+            <BiSolidWasher className="text-purple-600" />
+            Đơn của bạn
+          </h2>
           
           {orders.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-              <MdLocalLaundryService className="mx-auto text-5xl text-gray-400 mb-4" />
+            <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
+              <div className="bg-purple-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                <BiSolidWasher className="text-purple-600 text-3xl" />
+              </div>
               <p className="text-gray-500">Bạn chưa có đơn giặt nào</p>
             </div>
           ) : (
-            orders.map((order) => (
-              <motion.div
-                key={order._id}
-                variants={cardVariants}
-                className="bg-white rounded-xl shadow-lg p-6 transition-transform transform hover:scale-105 cursor-pointer"
-                onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}
-              >
-                <div className="flex flex-col sm:flex-row items-center justify-between ">
-                  <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-                    {order.type === 'delivery' ? (
-                      <MdDeliveryDining className="text-purple-600 h-10 w-10" />
-                    ) : (
-                      <MdLocalLaundryService className="text-purple-600 h-10 w-10" />
-                    )}
-                    <div>
-                      <p className="font-medium text-lg">
-                        {order.type === 'delivery' ? 'Đến lấy tận nơi' : 'Mang đến tiệm'}
-                      </p>
-                      <StatusTimeline status={order.status} />
-                      <p className="text-gray-500 text-sm">
-                        {new Date(order.createdAt).toLocaleString('vi-VN')}
-                      </p>
+            <div className="grid gap-6">
+              {orders.map((order) => (
+                <motion.div
+                  key={order._id}
+                  variants={cardVariants}
+                  className="bg-white rounded-2xl shadow-lg p-6"
+                  onClick={() => setSelectedOrder(selectedOrder === order._id ? null : order._id)}
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-purple-100 p-4 rounded-full">
+                        {order.type === 'delivery' ? (
+                          <FaMotorcycle className="text-purple-600 h-6 w-6" />
+                        ) : (
+                          <MdLocalLaundryService className="text-purple-600 h-6 w-6" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-lg text-gray-800">
+                          {order.type === 'delivery' ? 'Đến lấy tận nơi' : 'Mang đến tiệm'}
+                        </p>
+                        <p className="text-gray-500 text-sm flex items-center gap-2">
+                          <FaClock className="text-purple-600" />
+                          {new Date(order.createdAt).toLocaleString('vi-VN')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="w-full sm:w-auto">
+                      <StatusBadge currentStatus={order.status} />
                     </div>
                   </div>
-                  <StatusBadge currentStatus={order.status} />
-                </div>
-                {selectedOrder === order._id && order.note && (
-                  <p className="mt-4 text-gray-600 bg-gray-50 p-3 rounded-lg">
-                    {order.note}
-                  </p>
-                )}
-                <div className="flex justify-between items-center mt-4">
-                  {order.status === 'pending' ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCancelOrder(order._id);
-                      }}
-                      className="bg-red-500 text-white py-1 px-3 rounded-md font-medium hover:bg-red-600 transition-all duration-200"
+                  
+                  {/* Thêm phần hiển thị chi tiết các khoản tiền */}
+                  {order.totalPayment > 0 && (
+                    <div className="mt-4 bg-gray-50 rounded-xl p-4">
+                      <div className="grid gap-2 text-sm">
+                        {/* Tiền giặt ủi */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Tiền giặt ủi</span>
+                          <div className="flex items-center space-x-1">
+                            <span className="font-semibold text-gray-700">
+                              {order.subtotal?.toLocaleString('vi-VN')}
+                            </span>
+                            <span className="text-gray-600">đ</span>
+                          </div>
+                        </div>
+
+                        {/* Phí vận chuyển nếu có */}
+                        {order.type === 'delivery' && order.shippingFee > 0 && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Phí vận chuyển</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="font-semibold text-blue-600">
+                                +{order.shippingFee?.toLocaleString('vi-VN')}
+                              </span>
+                              <span className="text-gray-600">đ</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Giảm giá nếu có */}
+                        {order.discount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Giảm giá</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="font-semibold text-red-600">
+                                {order.discountType === 'percent' 
+                                  ? `-${order.discount}% (${Math.round(order.actualDiscount).toLocaleString('vi-VN')}đ)`
+                                  : `-${order.discount?.toLocaleString('vi-VN')}đ`
+                                }
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tổng tiền */}
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-200 mt-2">
+                          <span className="font-medium text-gray-700">Tổng tiền</span>
+                          <div className="flex items-center space-x-1">
+                            <span className="font-bold text-lg text-green-600">
+                              {order.totalPayment?.toLocaleString('vi-VN')}
+                            </span>
+                            <span className="text-gray-600">đ</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Hiển thị ghi chú nếu có */}
+                  {selectedOrder === order._id && order.note && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4"
                     >
-                      Hủy
-                    </button>
-                  ) : order.status === 'canceled' ? (
-                    <span className="text-red-600 font-bold">Đã hủy</span>
-                  ) : null}
-                  <p className="text-gray-500 text-sm font-bold">
-                    Tổng tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalPayment)}
-                  </p>
-                </div>
-              </motion.div>
-            ))
+                      <div className="flex items-center gap-2 text-gray-600 bg-purple-50 p-4 rounded-xl border border-purple-100">
+                        <MdInfo className="text-purple-600 flex-shrink-0" />
+                        <p>{order.note}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {/* Hiển thị địa chỉ nếu là đơn delivery */}
+                  {order.type === 'delivery' && order.address && (
+                    <div className="mt-4 flex items-start space-x-2 bg-purple-50 p-4 rounded-xl">
+                      <FaMapMarkerAlt className="text-purple-600 mt-1 flex-shrink-0" />
+                      <p className="text-gray-700">Địa chỉ: {order.address}</p>
+                    </div>
+                  )}
+                  
+                </motion.div>
+              ))}
+            </div>
           )}
         </motion.div>
       </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Đang xử lý...</p>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

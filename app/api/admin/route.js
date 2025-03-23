@@ -29,7 +29,16 @@ export async function GET(request) {
 // Update order
 export async function PUT(request) {
   try {
-    const { orderId, status, totalPayment } = await request.json();
+    const { 
+      orderId, 
+      status, 
+      subtotal, 
+      shippingFee, 
+      discount,
+      discountType,
+      actualDiscount,
+      totalPayment 
+    } = await request.json();
     
     await connectToDB();
     
@@ -42,6 +51,11 @@ export async function PUT(request) {
     }
 
     if (status) order.status = status;
+    if (subtotal !== undefined) order.subtotal = subtotal;
+    if (shippingFee !== undefined) order.shippingFee = shippingFee;
+    if (discount !== undefined) order.discount = discount;
+    if (discountType) order.discountType = discountType;
+    if (actualDiscount !== undefined) order.actualDiscount = actualDiscount;
     if (totalPayment !== undefined) order.totalPayment = totalPayment;
 
     await order.save();

@@ -24,18 +24,24 @@ export async function POST(req) {
   try {
     await connectToDB();
     const data = await req.json();
-    const { phone, type, note } = data;
+    const { phone, type, note, address } = data;
 
     if (!phone || !type) {
       return NextResponse.json({ message: "Thiếu thông tin bắt buộc" }, { status: 400 });
+    }
+
+    // Kiểm tra nếu là delivery thì bắt buộc phải có địa chỉ
+    if (type === 'delivery' && !address) {
+      return NextResponse.json({ message: "Vui lòng nhập địa chỉ lấy hàng" }, { status: 400 });
     }
 
     const newOrder = await Order.create({
       phone,
       type,
       note,
+      address,
       status: 'pending',
-      totalPayment: 0 // Sẽ được cập nhật bởi admin sau
+      totalPayment: 0
     });
 
     return NextResponse.json(newOrder, { status: 201 });

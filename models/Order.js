@@ -14,12 +14,38 @@ const OrderSchema = new Schema({
     type: String,
     default: ''
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  address: {
+    type: String,
+    default: ''
+  },
+  shippingFee: {
+    type: Number,
+    default: 0
+  },
+  discount: {
+    type: Number,
+    default: 0
+  },
+  discountType: {
+    type: String,
+    enum: ['amount', 'percent'],
+    default: 'amount'
+  },
+  actualDiscount: {
+    type: Number,
+    default: 0
+  },
+  subtotal: {
+    type: Number,
+    default: 0
   },
   totalPayment: {
     type: Number,
+    default: 0
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 
