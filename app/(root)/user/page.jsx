@@ -30,17 +30,17 @@ const StatusBadge = ({ currentStatus }) => {
   const badges = {
     pending: {
       text: 'Đang chờ xử lý',
-      color: 'bg-yellow-100 text-yellow-800',
+      color: 'bg-yellow-300 text-yellow-800 border-yellow-600',
       Icon: MdPendingActions
     },
     processing: {
       text: 'Đang giặt',
-      color: 'bg-blue-100 text-blue-800',
+      color: 'bg-blue-300 text-blue-800 border-blue-600',
       Icon: MdLocalLaundryService
     },
     completed: {
       text: 'Hoàn thành',
-      color: 'bg-green-100 text-green-800',
+      color: 'bg-green-300 text-green-800 border-green-600',
       Icon: MdDone
     }
   };
@@ -52,15 +52,13 @@ const StatusBadge = ({ currentStatus }) => {
       {statuses.map((status) => {
         const badge = badges[status];
         const isActive = status === currentStatus;
-        const opacityClass = isActive ? 'opacity-100' : 'opacity-50';
-        const borderClass = isActive ? 'border-2 border-purple-600' : 'border';
 
         return (
-          <div key={status} className={`flex flex-col items-center ${opacityClass}`}>
-            <div className={`w-20 h-20 rounded-full ${badge.color} flex items-center justify-center ${borderClass}`}>
-              <badge.Icon className="h-10 w-10" />
+          <div key={status} className={`flex flex-col items-center transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-100 opacity-50'}`}>
+            <div className={`w-24 h-24 rounded-full ${badge.color} border-4 ${isActive ? 'border-purple-600' : 'border-transparent'} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300`}>
+              <badge.Icon className="h-12 w-12" />
             </div>
-            <span className="mt-1 text-sm">{badge.text}</span>
+            <span className="mt-1 text-sm font-semibold">{badge.text}</span>
           </div>
         );
       })}
