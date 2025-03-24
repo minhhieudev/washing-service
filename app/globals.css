@@ -350,3 +350,12 @@
 .ant-card .ant-card-head {
   padding: 0px;
 }
+
+@keyframes highlight {
+  0% { background-color: #4CAF50; }
+  100% { background-color: transparent; }
+}
+
+.highlight {
+  animation: highlight 2s ease-out;
+}

@@ -6,6 +6,7 @@ import { MdLocalLaundryService, MdDeliveryDining, MdPendingActions, MdDone, MdLo
 import { FaShoppingBasket, FaMoneyBillWave, FaTruck } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
+import { pusherClient } from '@/lib/pusher';
 
 const StatusBadge = ({ status }) => {
   const badges = {
@@ -64,6 +65,7 @@ const Admin = () => {
     monthly: 0,
     yearly: 0
   });
+  const [newOrderId, setNewOrderId] = useState(null);
 
   // Animation variants
   const containerVariants = {
@@ -167,7 +169,56 @@ const Admin = () => {
   useEffect(() => {
     fetchOrders();
     fetchRevenue();
-  }, [filters.status, filters.type, filters.search]);
+
+    // Subscribe to admin channel
+    const channel = pusherClient.subscribe('admin-channel');
+    
+    // Lắng nghe sự kiện đơn hàng mới
+    channel.bind('new-order', (data) => {
+      setOrders(prevOrders => [data.order, ...prevOrders]);
+      setNewOrderId(data.order._id);
+      setTimeout(() => setNewOrderId(null), 5000);
+      
+      toast.success(data.message, {
+        icon: '🆕',
+        duration: 5000,
+        style: {
+          background: '#4CAF50',
+          color: '#fff'
+        }
+      });
+
+      // Phát âm thanh thông báo (tùy chọn)
+      const audio = new Audio('/notification.mp3'); // Nếu bạn có file âm thanh
+      audio.play().catch(e => console.log('Audio play failed:', e));
+    });
+
+    // Lắng nghe sự kiện hủy đơn
+    channel.bind('order-canceled', (data) => {
+      // Cập nhật trạng thái đơn hàng trong danh sách
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order._id === data.order._id ? data.order : order
+        )
+      );
+      
+      // Hiển thị thông báo
+      toast.error(data.message, {
+        icon: '❌',
+        duration: 5000,
+        style: {
+          background: '#f44336',
+          color: '#fff'
+        }
+      });
+    });
+
+    // Cleanup khi component unmount
+    return () => {
+      channel.unbind_all();
+      pusherClient.unsubscribe('admin-channel');
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-8">
@@ -340,7 +391,11 @@ const Admin = () => {
                 <motion.div
                   key={order._id}
                   variants={cardVariants}
-                  className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
+                  className={`${
+                    order._id === newOrderId 
+                      ? 'animate-pulse bg-green-50 border-green-500' 
+                      : 'bg-white'
+                  } rounded-lg shadow-md p-6 transition-all duration-300`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
                     <div className="flex sm:items-start space-x-4 sm:space-x-6 items-center">

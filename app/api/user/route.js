@@ -1,6 +1,7 @@
 import { connectToDB } from '@mongodb';
 import Order from '@/models/Order';
 import { NextResponse } from 'next/server';
+import { pusherServer } from '@/lib/pusher';
 
 // Lấy danh sách đơn hàng của user
 export async function GET(req) {
@@ -42,6 +43,12 @@ export async function POST(req) {
       address,
       status: 'pending',
       totalPayment: 0
+    });
+
+    // Emit event cho admin
+    await pusherServer.trigger('admin-channel', 'new-order', {
+      order: newOrder.toObject(),
+      message: `Đơn hàng mới từ ${phone}`
     });
 
     return NextResponse.json(newOrder, { status: 201 });

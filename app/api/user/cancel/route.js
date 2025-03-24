@@ -1,6 +1,7 @@
 import { connectToDB } from '@mongodb';
 import Order from '@/models/Order';
 import { NextResponse } from 'next/server';
+import { pusherServer } from '@/lib/pusher';
 
 // ... existing code ...
 
@@ -26,6 +27,12 @@ export async function PATCH(req) {
 
     order.status = 'canceled';
     await order.save();
+
+    // Emit event cho admin
+    await pusherServer.trigger('admin-channel', 'order-canceled', {
+      order: order.toObject(),
+      message: `Đơn hàng ${orderId} đã bị hủy bởi khách hàng ${order.phone}`
+    });
 
     return NextResponse.json({ message: "Order status updated to canceled" }, { status: 200 });
   } catch (error) {
